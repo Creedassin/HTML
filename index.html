@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title>疫情地图</title>
+		<link rel="stylesheet" type="text/css" href="css/main.css" />
+		<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/map/china.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/data.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<!--头部-->
+		<!--id属性值唯一-->
+		<div id="title_div">
+			<div id="title1">新型冠状病毒肺炎</div>
+			<div id="title2">疫情实时大数据报告</div>
+			<div id="title3">共 2,885,473,145 人次已浏览</div>
+		</div>
+
+		<!--主体内容-->
+		<div id="main_div">
+			<!--汇总数据-->
+			<div id="data">
+				<h2 style="padding-top: 30px;padding-left: 20px;">国内疫情</h2>
+				<p style="padding-left: 20px;color: rgb(169,169,169);">更新至2020.7.1 00:00</p>
+				<!--详细数据-->
+				<div id="data_info">
+					<!--现有确诊-->
+					<div id="confirmed_data">
+						<h2 style="color: red;padding-top: 10px;">516</h2>
+						<h3 style="padding-top: 5px;">现有确诊</h3>
+						<h5 style="color: darkgray;padding-top: 10px;">较昨日<span style="color: red;">-9</span></h5>
+					</div>
+					<!--现有疑似-->
+					<div id="suspected_data">
+						<h2 style="color: orange;padding-top: 10px;">8</h2>
+						<h3 style="padding-top: 5px;">现有疑似</h3>
+						<h5 style="color: darkgray;padding-top: 10px;">较昨日<span style="color: orange;">+2</span></h5>
+					</div>
+					<!--累计治愈-->
+					<div id="cured_data">
+						<h2 style="color: rgb(12,161,174);padding-top: 10px;">85232</h2>
+						<h3 style="padding-top: 5px;">累计治愈</h3>
+						<h5 style="color: darkgray;padding-top: 10px;">较昨日<span style="color: rgb(12,161,174);">+5</span></h5>
+					</div>
+					<!--累计死亡-->
+					<div id="death_data">
+						<h2 style="color: rgb(128,128,128);padding-top: 10px;">4648</h2>
+						<h3 style="padding-top: 5px;">累计死亡</h3>
+						<h5 style="color: darkgray;padding-top: 10px;">较昨日<span style="color: rgb(128,128,128);">0</span></h5>
+					</div>
+				</div>
+			</div>
+
+			<!--中国地图-->
+			<div id="china_map">
+
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//创建地图变量
+		var myChart = echarts.init(document.getElementById('china_map'));
+
+		//设置中国地图分段的颜色
+		var chinaPieces = [{
+				min: 1000,
+				max: 100000000,
+				label: '确诊大于等于1000人',
+				color: '#372a28'
+			},
+			{
+				min: 500,
+				max: 999,
+				label: '确诊500-999人',
+				color: '#4e160f'
+			},
+			{
+				min: 100,
+				max: 499,
+				label: '确诊100-499人',
+				color: '#974236'
+			},
+			{
+				min: 10,
+				max: 99,
+				label: '确诊10-99人',
+				color: '#ee7263'
+			},
+			{
+				min: 1,
+				max: 9,
+				label: '确诊1-9人',
+				color: '#f5bba7'
+			}
+		];
+
+		//调用函数
+		showMap(true, '中国');
+
+		function showMap(isChina, showName) { //isChina  true 中国  false 某省
+			//疫情数据
+			var tmpSeriesData = [];
+			//判断
+			//如果是全国地图
+			if(isChina) {
+				data.forEach((item) => {
+					var ser = {
+						//省的名字
+						name: item.provinceShortName,
+						//地图中各个块的颜色用到
+						value: item.currentConfirmedCount,
+						//现有确诊
+						currentConfirmedCount: item.currentConfirmedCount,
+						//现有疑似
+						suspectedCount: item.suspectedCount,
+						//累计治愈
+						curedCount: item.curedCount,
+						//累计死亡
+						deadCount: item.deadCount
+					};
+					//把对象添加到数组中
+					tmpSeriesData.push(ser);
+				});
+			} else {
+				//如果是某省地图
+				data.forEach((it) => {
+					//首先通过省份的名字找到对应省份的数据
+					if(it.provinceShortName === showName) {
+						//找到省份之后遍历该省下所有的市
+						it.cities.forEach((i) => {
+							var ser1 = {
+								//市的名字
+								name: i.cityName,
+								value: i.currentConfirmedCount,
+								//现有确诊
+								currentConfirmedCount: i.currentConfirmedCount,
+								//现有疑似
+								suspectedCount: i.suspectedCount,
+								//治愈
+								curedCount: i.curedCount,
+								//死亡
+								deadCount: i.deadCount
+							};
+							//添加到数组中
+							tmpSeriesData.push(ser1);
+						});
+					}
+				});
+			}
+
+			//配置项
+			var option = {
+				//图表的标题
+				title: {
+					//图表的标题
+					text: showName + '疫情图',
+					left: 'center'
+				},
+				//视觉映射组件，相当于地图与数据之间的通道
+				visualMap: {
+					//分段型
+					type: 'piecewise',
+					//分段依据（自定义）
+					pieces: chinaPieces,
+					//设置文本显示的样式
+					textStyle: {
+						color: '#000000'
+					},
+					//当鼠标悬停时，该省份的颜色
+					inRange: {
+						color: ['yellow']
+					},
+					//分段距离顶部的位置
+					top: '60%'
+				},
+				//鼠标悬停时显示的文字框
+				tooltip: {
+					//是否显示
+					show: true,
+					//显示的格式
+					formatter: function(param) {
+						//返回一个格式化的字符串
+						return param.data.name + '<br>' + '现有确诊：' + param.data.currentConfirmedCount + '<br>' + '现有疑似：' + param.data.suspectedCount + '<br>' + '累计治愈：' + param.data.curedCount + '<br>' + '累计死亡：' + param.data.deadCount;
+					}
+				},
+				//设置图表的类型，比如：饼图、柱状图、地图...
+				series: [{
+					//图表类型
+					type: 'map',
+					map: isChina ? 'china' : showName,
+					//地图要显示的数据
+					data: tmpSeriesData,
+					//地图组件距离容器顶部的距离
+					top: '3%'
+				}]
+			};
+			//显示图表
+			myChart.setOption(option);
+
+			//设置地图的响应事件
+			if(isChina) {
+				myChart.on('click', function(param) {
+					for(var i = 0; i < provincesText.length; i++) {
+						//如果找到对应省份的名字，显示对应省份的方法
+						if(param.name === provincesText[i]) {
+							//显示省份地图
+							showProvinceMap(provincesText[i], provinces[i]);
+							break;
+						}
+					}
+				});
+			} else {
+				myChart.on('dblclick',function(){
+					//省级地图双击返回全国地图
+					showMap(true,'中国');
+				});
+			}
+		}
+
+		//显示省份地图
+		function showProvinceMap(proText, pro) {
+			//在控制台输出
+			//			console.log("哈哈哈哈哈哈");
+			console.log(proText + "：" + pro);
+			//根据省份名字的拼音加载响应的js文件
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = "./js/map/province/" + pro + ".js";
+			script.onload = function() {
+				showMap(false, proText);
+			}
+			//添加到head中
+			document.getElementsByTagName("head")[0].appendChild(script);
+		}
+	</script>
+
+</html>

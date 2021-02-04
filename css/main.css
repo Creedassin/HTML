@@ -1,0 +1,87 @@
+/*去掉某些元素的默认样式*/
+*{
+	margin: 0;
+	padding: 0;
+}
+
+body {
+	background: rgb(16, 174, 181);
+}
+
+/*标题div*/
+#title_div {
+	/*背景颜色*/
+	/*background-color: lightcoral;*/
+	/*设置背景图片*/
+	background-image: url(../img/bg.png);
+	/*设置背景图片大小*/
+	background-size: 100%;
+	width: 900px;
+	height: 220px;
+	/*设置盒子水平居中*/
+	margin: 0 auto;
+}
+
+/*主体内容div*/
+#main_div{
+	background-color: white;
+	width: 1000px;
+	height: 1000px;
+	margin: 0 auto;
+	border-radius: 10px;
+}
+
+#title1{
+	padding-top: 80px;
+	/*设置字体颜色*/
+	color: white;
+	/*设置字体大小*/
+	font-size: 20px;
+}
+
+#title2{
+	padding: 5px 0px;
+	color: white;
+	font-size: 40px;
+}
+
+#title3{
+	color: white;
+	font-size: 16px;
+	background-color: rgb(12,161,174);
+	padding: 5px;
+	/*width: 220px;*/
+	/*设置div自适应内容的宽度*/
+	/*火狐*/
+	width: -moz-fit-content;
+	/*谷歌*/
+	width: -webkit-fit-content;
+	/*设置弧度*/
+	border-radius: 15px;
+}
+
+/*详细数据*/
+#data_info{
+	width: 960px;
+	height: 120px;
+	background-color: rgb(245,245,245);
+	margin: 0 auto;
+	border-radius: 5px;
+	margin-top: 10px;
+}
+
+#data_info div{
+	/*设置浮动*/
+	float: left;
+	width: 25%;
+	/*实现文字居中显示*/
+	text-align: center;
+}
+
+/*地图*/
+#china_map{
+	width: 1000px;
+	height: 800px;
+	/*background-color: #ADD8E6;*/
+	padding-top: 10px;
+}
